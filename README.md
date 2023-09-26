@@ -340,9 +340,9 @@ contains the following columns for each transcript:
 Below is an example of the predicted ORF and altORF output for three transcripts.
 
     transcript_id  transcript_name   mean_coverage   predicted=annotated   annotated_events   predicted_events                                                                 log_odds_score   annotated_path_score   predicted_path_score   null_path_score
-    YOR239W_mRNA   ABP140            2.1462          false                                    +1 PRF (829-829), ORF (1-828), ORF (830-1888)                                     789.118             nan                    -3568.647              -4357.765
-    YEL009C_mRNA   GCN4              0.3338          false                 ORF (572-1417)     uORF (211-222), uORF (279-287), uORF (396-407), uORF (421-432), ORF (572-1417)   18.157               -2483.361              -2465.204              -2483.361
-    YAR028W_mRNA   None              1.0389          true                  ORF (55-759)       ORF (55-759)                                                                     0.000                -1962.025              -1962.025              -1962.025
+    YOR239W_mRNA   ABP140            2.1462          false                                    +1 PRF (829-829), ORF (1-828), ORF (830-1888)                                    789.118          nan                    -3568.647              -4357.765
+    YEL009C_mRNA   GCN4              0.3338          false                 ORF (572-1417)     uORF (211-222), uORF (279-287), uORF (396-407), uORF (421-432), ORF (572-1417)   18.157           -2483.361              -2465.204              -2483.361
+    YAR028W_mRNA   None              1.0389          true                  ORF (55-759)       ORF (55-759)                                                                     0.000            -1962.025              -1962.025              -1962.025
 
 
 ## Predicted mRNA
