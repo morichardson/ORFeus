@@ -85,13 +85,13 @@ def get_events(path, altorfs_idx):
                 # Print type of PRF and interval of positions
                 if event=='PRF':
                     if range[1]-range[0]==0: # +1 PRF
-                        altorfs.append('+1 %s (%i-%i)' % (event, range[0], range[1]))
+                        altorfs.append('+1 %s (%i-%i)' % (event, range[0]+1, range[1]+1))
                     elif range[1]-range[0]==1: # -1 PRF
-                        altorfs.append('-1 %s (%i-%i)' % (event, range[0], range[1]))
+                        altorfs.append('-1 %s (%i-%i)' % (event, range[0]+1, range[1]+1))
 
                 # Print event and interval of positions
                 else:
-                    altorfs.append('%s (%i-%i)' % (event, range[0], range[1]))
+                    altorfs.append('%s (%i-%i)' % (event, range[0]+1, range[1]+1))
 
     return altorfs
 
