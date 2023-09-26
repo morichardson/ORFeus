@@ -314,14 +314,6 @@ algorithm. Run `python orfeus/run.py -h` to see all available options.
 
 # Output files
 
-ORFeus outputs three files:
-
-1. results.txt: a table of predicted ORFs and altORFs
-2. predicted_mrna.fn: predicted translation of each transcript with UTRs and altORFs denoted (fasta format)
-3. predicted_protein.fa: predicted protein sequences (fasta format)
-
-
-
 ## Predicted ORFs and altORFs
 
 A table of predicted ORFs and altORFs is generated in `results.txt`. This table
@@ -344,7 +336,6 @@ Below is an example of the predicted ORF and altORF output for three transcripts
     YEL009C_mRNA   GCN4              0.3338          false                 ORF (572-1417)     uORF (211-222), uORF (279-287), uORF (396-407), uORF (421-432), ORF (572-1417)   18.157           -2483.361              -2465.204              -2483.361
     YAR028W_mRNA   None              1.0389          true                  ORF (55-759)       ORF (55-759)                                                                     0.000            -1962.025              -1962.025              -1962.025
 
-
 ## Predicted mRNA
 
 The output predicted mRNA sequence file is in
@@ -357,7 +348,6 @@ symbols to denote each type of ORF and altORF feature:
 - `X|Y`: stop codon readthrough (this symbol appears after between the last nucleotide of the stop codon X and the first nucleotide of the downstream sequence Y)
 - `(X)`: nucleotide skipped during a +1 programmed ribosomal frameshift (these symbols surround nucleotide X that is skipped)
 - `(X)(Y)`: nucleotides skipped during a +2 frameshift, which is how a -1 programmed ribosomal frameshift is represented by the model (these symbols surround nucleotides X and Y that are skipped)
-
 
 Below is an example FASTA file excerpt for a predicted mRNA ORF sequence.
 
@@ -387,7 +377,6 @@ Below is an example FASTA file excerpt for a predicted mRNA ORF sequence.
     GCAAAGAATGAAACAACTTGAAGACAAGGTTGAAGAATTGCTTTCGAAAAATTATCACTT
     GGAAAATGAGGTTGCCAGATTAAAGAAATTAGTTGGCGAACGCTGA].............
     ...........................................................
-
 
 ## Predicted protein
 
