@@ -200,7 +200,7 @@ Building the model involves processing the data and setting the model parameters
 (transition probabilities, emission probabilities).
 Run `python orfeus/build.py -h` to see all available options.
 
-  usage: build.py [-h] [-s SKIP [SKIP ...]] [--data_file DATA_FILE] [-o OUTDIR]
+    usage: build.py [-h] [-s SKIP [SKIP ...]] [--data_file DATA_FILE] [-o OUTDIR]
                   [-a ALPHA] [-b BETA] [-g GAMMA] [-d DELTA] [-z ZETA] [--f5 F5]
                   [--f3 F3] [--utr5 UTR5] [--utr3 UTR3] [--orf ORF]
                   [--uorf UORF] [--dorf DORF]
@@ -211,15 +211,15 @@ Run `python orfeus/build.py -h` to see all available options.
                   [--window WINDOW] [--threads THREADS]
                   plus_file minus_file seqs_file annotations_file
 
-  Build ORFeus model
+    Build ORFeus model
 
-  positional arguments:
+    positional arguments:
     plus_file             riboseq plus strand bg/wig file path
     minus_file            riboseq minus strand bg/wig file path
     seqs_file             genome or transcriptome fasta file path
     annotations_file      annotations gtf/gff file path
 
-  optional arguments:
+    optional arguments:
     -h, --help            show this help message and exit
     -s SKIP [SKIP ...], --skip SKIP [SKIP ...]
                           list known frameshifted genes that should be filtered
