@@ -42,7 +42,7 @@ compare predictions.)
 
 ### Reasons not to use ORFeus:
   - You need a _de novo_ ORF caller for a novel genome. (ORFeus requires input
-transcript annotations.)
+transcript annotations to determine transcript bounds and for training parameters.)
   - You don't have high-resolution ribo-seq data. (ORFeus infers translation
 based on ribosome profiling reads.)
 
@@ -200,7 +200,7 @@ Building the model involves processing the data and setting the model parameters
 (transition probabilities, emission probabilities).
 Run `python orfeus/build.py -h` to see all available options.
 
-    usage: build.py [-h] [-s SKIP [SKIP ...]] [--data_file DATA_FILE] [-o OUTDIR]
+  usage: build.py [-h] [-s SKIP [SKIP ...]] [--data_file DATA_FILE] [-o OUTDIR]
                   [-a ALPHA] [-b BETA] [-g GAMMA] [-d DELTA] [-z ZETA] [--f5 F5]
                   [--f3 F3] [--utr5 UTR5] [--utr3 UTR3] [--orf ORF]
                   [--uorf UORF] [--dorf DORF]
@@ -211,15 +211,15 @@ Run `python orfeus/build.py -h` to see all available options.
                   [--window WINDOW] [--threads THREADS]
                   plus_file minus_file seqs_file annotations_file
 
-    Build ORFeus model
+  Build ORFeus model
 
-    positional arguments:
+  positional arguments:
     plus_file             riboseq plus strand bg/wig file path
     minus_file            riboseq minus strand bg/wig file path
     seqs_file             genome or transcriptome fasta file path
     annotations_file      annotations gtf/gff file path
 
-    optional arguments:
+  optional arguments:
     -h, --help            show this help message and exit
     -s SKIP [SKIP ...], --skip SKIP [SKIP ...]
                           list known frameshifted genes that should be filtered
@@ -310,3 +310,105 @@ algorithm. Run `python orfeus/run.py -h` to see all available options.
                         mean riboseq coverage threshold
     --threads THREADS     number of processes to run in parallel when running
                         the model on all transcripts
+
+
+# Output files
+
+ORFeus outputs three files:
+
+1. results.txt: a table of predicted ORFs and altORFs
+2. predicted_mrna.fn: predicted translation of each transcript with UTRs and altORFs denoted (fasta format)
+3. predicted_protein.fa: predicted protein sequences (fasta format)
+
+
+
+## Predicted ORFs and altORFs
+
+A table of predicted ORFs and altORFs is generated in `results.txt`. This table
+contains the following columns for each transcript:
+  - `transcript_id`: transcript ID
+  - `transcript_name`: transcript name (`None` if missing)
+  - `mean_coverage`: mean number of ribo-seq reads per nucleotide for the transcript
+  - `predicted=annotated`: `true` if the predicted ORFs are exactly the same as the annotated ORFs, `false` otherwise
+  - `annotated_events`: annotated ORF and altORF events (indices for each event in parentheses, 1-indexed and inclusive of start and end index)
+  - `predicted_events`: predicted ORF and altORF events (indices for each event in parentheses, 1-indexed and inclusive of start and end index)
+  - `log_odds_score`: log of the predicted path score divided by the null path score (see below)
+  - `annotated_path_score`: total probability of the annotated path
+  - `predicted_path_score`: total probability of the predicted path (path if altORFs events are allowed)
+  - `null_path_score`: total probability of the best canonical path (path if no altORF events are allowed)
+
+Below is an example of the predicted ORF and altORF output for three transcripts.
+
+    transcript_id  transcript_name   mean_coverage   predicted=annotated   annotated_events   predicted_events                                                                 log_odds_score   annotated_path_score   predicted_path_score   null_path_score
+    YOR239W_mRNA   ABP140            2.1462          false                                    +1 PRF (829-829), ORF (1-828), ORF (830-1888)                                     789.118             nan                    -3568.647              -4357.765
+    YEL009C_mRNA   GCN4              0.3338          false                 ORF (572-1417)     uORF (211-222), uORF (279-287), uORF (396-407), uORF (421-432), ORF (572-1417)   18.157               -2483.361              -2465.204              -2483.361
+    YAR028W_mRNA   None              1.0389          true                  ORF (55-759)       ORF (55-759)                                                                     0.000                -1962.025              -1962.025              -1962.025
+
+
+## Predicted mRNA
+
+The output predicted mRNA sequence file is in
+[FASTA format](https://blast.ncbi.nlm.nih.gov/doc/blast-topics/). The translation
+of each transcript is denoted for each sequence entry. We use with the following
+symbols to denote each type of ORF and altORF feature:
+- `.`: nucleotide in UTR (this symbol is shown in place of each UTR nucleotide)
+- `[X`: beginning of a translated ORF (this symbol appears before the first nucleotide of the start codon X)
+- `X]`: end of a translated ORF (this symbol appears after the last nucleotide of the stop codon X)
+- `X|Y`: stop codon readthrough (this symbol appears after between the last nucleotide of the stop codon X and the first nucleotide of the downstream sequence Y)
+- `(X)`: nucleotide skipped during a +1 programmed ribosomal frameshift (these symbols surround nucleotide X that is skipped)
+- `(X)(Y)`: nucleotides skipped during a +2 frameshift, which is how a -1 programmed ribosomal frameshift is represented by the model (these symbols surround nucleotides X and Y that are skipped)
+
+
+Below is an example FASTA file excerpt for a predicted mRNA ORF sequence.
+
+    >YEL009C_mRNA (GCN4) orfeus prediction
+    ............................................................
+    ............................................................
+    ............................................................
+    ..............................[ATGGCTTGCTAA]................
+    ........................................[ATGTGTTAA].........
+    ............................................................
+    .......................................[ATGTACCCGTAG].......
+    ......[ATGTTTCCGTAA]........................................
+    ............................................................
+    .......................................[ATGTCCGAATATCAGCCAAG
+    TTTATTTGCTTTAAATCCAATGGGTTTCTCACCATTGGATGGTTCTAAATCAACCAACGA
+    AAATGTATCTGCTTCCACTTCTACTGCCAAACCAATGGTTGGCCAATTGATTTTTGATAA
+    ATTCATCAAGACTGAAGAGGATCCAATTATCAAACAGGATACCCCTTCGAACCTTGATTT
+    TGATTTTGCTCTTCCACAAACGGCAACTGCACCTGATGCCAAGACCGTTTTGCCAATTCC
+    GGAGCTAGATGACGCTGTAGTGGAATCTTTCTTTTCGTCAAGCACTGATTCAACTCCAAT
+    GTTTGAGTATGAAAACCTAGAAGACAACTCTAAAGAATGGACATCCTTGTTTGACAATGA
+    CATTCCAGTTACCACTGACGATGTTTCATTGGCTGATAAGGCAATTGAATCCACTGAAGA
+    AGTTTCTCTGGTACCATCCAATCTGGAAGTCTCGACAACTTCATTCTTACCCACTCCTGT
+    TCTAGAAGATGCTAAACTGACTCAAACAAGAAAGGTTAAGAAACCAAATTCAGTCGTTAA
+    GAAGTCACATCATGTTGGAAAGGATGACGAATCGAGACTGGATCATCTAGGTGTTGTTGC
+    TTACAACCGCAAACAGCGTTCGATTCCACTTTCTCCAATTGTGCCCGAATCCAGTGATCC
+    TGCTGCTCTAAAACGTGCTAGAAACACTGAAGCCGCCAGGCGTTCTCGTGCGAGAAAGTT
+    GCAAAGAATGAAACAACTTGAAGACAAGGTTGAAGAATTGCTTTCGAAAAATTATCACTT
+    GGAAAATGAGGTTGCCAGATTAAAGAAATTAGTTGGCGAACGCTGA].............
+    ...........................................................
+
+
+## Predicted protein
+
+The output predicted protein sequence file is in
+[FASTA format](https://blast.ncbi.nlm.nih.gov/doc/blast-topics/). The protein
+translation of each predicted ORF is a separate entry in the file.
+
+Below is an example FASTA file excerpt for the predicted protein sequences for
+the above example transcript.
+
+    >YEL009C_mRNA (GCN4) orfeus prediction 0
+    MAC
+    >YEL009C_mRNA (GCN4) orfeus prediction 1
+    MC
+    >YEL009C_mRNA (GCN4) orfeus prediction 2
+    MYP
+    >YEL009C_mRNA (GCN4) orfeus prediction 3
+    MFP
+    >YEL009C_mRNA (GCN4) orfeus prediction 4
+    MSEYQPSLFALNPMGFSPLDGSKSTNENVSASTSTAKPMVGQLIFDKFIKTEEDPIIKQD
+    TPSNLDFDFALPQTATAPDAKTVLPIPELDDAVVESFFSSSTDSTPMFEYENLEDNSKEW
+    TSLFDNDIPVTTDDVSLADKAIESTEEVSLVPSNLEVSTTSFLPTPVLEDAKLTQTRKVK
+    KPNSVVKKSHHVGKDDESRLDHLGVVAYNRKQRSIPLSPIVPESSDPAALKRARNTEAAR
+    RSRARKLQRMKQLEDKVEELLSKNYHLENEVARLKKLVGER
