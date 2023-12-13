@@ -73,7 +73,7 @@ Python distribution that comes with all of these packages.
 
     cd ORFeus
 
-    python orfeus/build.py data/coronavirus/Finkel2021_forward.wig data/Finkel2021_reverse.wig data/coronavirus/dna.fa data/coronavirus/annotations.gtf -o data/coronavirus/
+    python orfeus/build.py data/coronavirus/Finkel2021_forward.wig data/coronavirus/Finkel2021_reverse.wig data/coronavirus/dna.fa data/coronavirus/annotations.gtf -o data/coronavirus/
 
     python orfeus/run.py data/coronavirus/data.txt.gz data/coronavirus/parameters_h1.npy data/coronavirus/parameters_h0.npy -o data/coronavirus/
 
