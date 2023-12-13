@@ -71,11 +71,26 @@ Python distribution that comes with all of these packages.
 
 ## Run example
 
+Navigate to the ORFeus directory:
+
     cd ORFeus
+
+Create and activate an environment with python 3.7 and the required versions of python packages (suggested):
+
+    conda create --name orfeus_env --file requirements.txt
+    conda activate orfeus_env
+
+Set the ORFeus parameters:
 
     python orfeus/build.py data/coronavirus/Finkel2021_forward.wig data/coronavirus/Finkel2021_reverse.wig data/coronavirus/dna.fa data/coronavirus/annotations.gtf -o data/coronavirus/
 
+Run ORFeus:
+
     python orfeus/run.py data/coronavirus/data.txt.gz data/coronavirus/parameters_h1.npy data/coronavirus/parameters_h0.npy -o data/coronavirus/
+
+When finished running ORFeus, you can deactivate the python environment (suggested):
+
+    conda deactivate
 
 
 # Input files
